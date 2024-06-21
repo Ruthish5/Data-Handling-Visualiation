@@ -16,11 +16,12 @@ pie_plot <- ggplot(data, aes(x = "", y = Users, fill = factor(Year))) +
   theme_minimal()
 
 print(pie_plot)
-
-mosaic_plot <- ggplot(data) +
-  geom_mosaic(aes(weight = Users, x = product(Browser))) +
-  labs(title = "Mosaic Plot of Chrome Users Over Years", x = "Browser", y = "Users", fill = "Year") +
-  theme_minimal()
+mosaic_plot <- ggplot(data, aes(x = factor(Year), y = Users, fill = Browser)) +
+  geom_tile(stat = "identity") +
+  scale_fill_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd")) +  # Set custom colors
+  theme_minimal() +
+  labs(title = "Mosaic Plot of Internet Users by Year and Browser",
+       x = "Year", y = "Users")
 
 print(mosaic_plot)
 

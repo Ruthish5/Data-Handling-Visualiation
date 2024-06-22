@@ -1,0 +1,45 @@
+library(ggplot2)
+library(zoo)
+library(forecast)
+
+data <- data.frame(
+  Date = as.Date(c("2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01")),
+  Sales = c(100, 120, 150, 130, 140)
+)
+
+ggplot(data, aes(x = Date, y = Sales)) + 
+  geom_line() + 
+  labs(title = "Sales Over Time", x = "Date", y = "Sales")
+
+data$Month <- format(data$Date, "%m")
+monthly_avg <- aggregate(Sales ~ Month, data, mean)
+ggplot(monthly_avg, aes(x = Month, y = Sales)) + 
+  geom_bar(stat = "identity") + 
+  labs(title = "Monthly Average Sales", x = "Month", y = "Average Sales")
+
+ggplot(data, aes(x = Sales, y = lag(Sales))) + 
+  geom_point() + 
+  labs(title = "Lag Plot of Sales", x = "Sales (t)", y = "Sales (t-1)")
+
+ggplot(data, aes(x = Date, y = Sales)) + 
+  geom_line() + 
+  geom_smooth(method = "loess", se = FALSE, color = "red") + 
+  labs(title = "Time Series Plot with Smoothed Line", x = "Date", y = "Sales")
+
+
+
+
+data$Month <- format(data$Date, "%m-%Y")
+
+monthly_avg <- data %>%
+  group_by(Month) %>%
+  summarise(Avg_Sales = mean(Sales))
+
+monthly_avg$Month <- as.Date(paste0(monthly_avg$Month, "-01"), format = "%m-%Y-%d")
+
+ggplot(monthly_avg, aes(x = Month, y = Avg_Sales)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Seasonal Subseries Plot of Sales", x = "Month", y = "Average Sales") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")
